@@ -59,6 +59,16 @@ DAY_CHOICES = (
         ('sun', u'Воскресенье'),
     )
 
+WEEK_DICT = {
+        'mon': 1,
+        'tue': 2,
+        'wed': 3,
+        'thu': 4,
+        'fri': 5,
+        'sat': 6,
+        'sun': 7,
+}
+
 
 class ServiceProviderSchedule(models.Model):
     service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)

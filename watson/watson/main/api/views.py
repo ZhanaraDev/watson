@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from datetime import timedelta, datetime
 
 from rest_framework import viewsets
@@ -9,7 +10,7 @@ from rest_framework.response import Response
 from main.api.serializers import InsurancePackageSerializer, CategorySerializer, ClientCompanyEmployeesSerializer, \
     ServiceProviderSerializer
 from main.models import InsurancePackage, Category, InsurancePackageCategories, ClientCompanyEmployees, ServiceProvider, \
-    ServiceProviderSchedule, Appointment
+    ServiceProviderSchedule, Appointment, WEEK_DICT
 
 
 class InsurancePackageViewset(viewsets.ModelViewSet):
@@ -110,7 +111,8 @@ class AppointmentViewSet(viewsets.ViewSet):
         )
         schedule_dict = {}
         for s in schedule:
-            schedule_dict[s.day] = []
+            k = WEEK_DICT[s.day]
+            schedule_dict[k] = []
             appointments_list = appointments.filter(
                 week_day=s.day
             ).order_by('time').values_list('time', flat=True)
@@ -122,18 +124,18 @@ class AppointmentViewSet(viewsets.ViewSet):
                 if appoint.hour in time_slots:
                     time_slots.remove(appoint.hour)
 
-            schedule_dict[s.day] = time_slots
+            schedule_dict[k] = time_slots
+        sorted_schedule = OrderedDict(sorted(schedule_dict.items(), key=lambda t: t[0]))
+        return Response(sorted_schedule)
 
-        return Response(schedule_dict)
-
-    @action(detail=True)
-    def appoint(self, request, pk):
-        date = request.data.get('date')
-        time = request.data.get('time')
-        week_day = request.data.get('week_day')
-
-        Appointment.objects.create(
-            employee=ClientCompanyEmployees.objects.filter(user=request.user).first(),
-            service_provider=ServiceProvider.objects.get(id=pk),
-
-        )
+    # @action(detail=True)
+    # def appoint(self, request, pk):
+    #     date = request.data.get('date')
+    #     time = request.data.get('time')
+    #     week_day = request.data.get('week_day')
+    #
+    #     Appointment.objects.create(
+    #         employee=ClientCompanyEmployees.objects.filter(user=request.user).first(),
+    #         service_provider=ServiceProvider.objects.get(id=pk),
+    #
+    #     )
