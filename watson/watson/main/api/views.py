@@ -110,6 +110,7 @@ class AppointmentViewSet(viewsets.ViewSet):
             date__gte=start_day,
             date__lte=end_day,
         )
+        print(appointments)
         schedule_dict = {}
         for s in schedule:
             k = WEEK_DICT[s.day]
@@ -144,7 +145,9 @@ class AppointmentViewSet(viewsets.ViewSet):
             employee.balance -= service_provider.visit_cost
             employee.save()
             if not Appointment.objects.filter(
-                    week_day=week_day, date=date, time=time).exists():
+                    week_day=week_day,
+                    date=date, time=time,
+                    service_provider=service_provider).exists():
 
                 Appointment.objects.create(
                     employee=employee,
