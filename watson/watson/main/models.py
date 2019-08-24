@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -61,8 +63,8 @@ DAY_CHOICES = (
 class ServiceProviderSchedule(models.Model):
     service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
     day = models.CharField(choices=DAY_CHOICES, max_length=50)
-    time_start = models.DateField()
-    time_end = models.DateField()
+    time_start = models.TimeField(default=datetime.time(hour=9))
+    time_end = models.TimeField(default=datetime.time(hour=18))
 
 
 class Appointment(models.Model):

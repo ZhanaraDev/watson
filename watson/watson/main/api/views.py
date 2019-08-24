@@ -1,3 +1,5 @@
+from datetime import timedelta, datetime
+
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action, permission_classes
@@ -6,7 +8,8 @@ from rest_framework.response import Response
 
 from main.api.serializers import InsurancePackageSerializer, CategorySerializer, ClientCompanyEmployeesSerializer, \
     ServiceProviderSerializer
-from main.models import InsurancePackage, Category, InsurancePackageCategories, ClientCompanyEmployees, ServiceProvider
+from main.models import InsurancePackage, Category, InsurancePackageCategories, ClientCompanyEmployees, ServiceProvider, \
+    ServiceProviderSchedule, Appointment
 
 
 class InsurancePackageViewset(viewsets.ModelViewSet):
@@ -84,3 +87,40 @@ class ServiceProviderViewset(viewsets.ModelViewSet):
         return Response(self.serializer_class(sps, many=True).data)
 
 
+class AppointmentViewSet(viewsets.ViewSet):
+    queryset = Appointment.objects.none()
+    # serializer_class = None
+
+    @staticmethod
+    def get_start_end_days_of_week(today):
+        start = today - timedelta(days=today.weekday())
+        end = start + timedelta(days=6)
+        return start, end
+
+    @action(detail=True)
+    def schedule(self, request, pk):
+        service_provider = ServiceProvider.objects.get(id=pk)
+        schedule = ServiceProviderSchedule.objects.filter(service_provider=service_provider)
+        start_day, end_day = self.get_start_end_days_of_week(datetime.today())
+        appointments = Appointment.objects.filter(
+            service_provider=service_provider,
+            date__gte=start_day,
+            date__lte=end_day,
+        )
+        schedule_dict = {}
+        for s in schedule:
+            schedule_dict[s.day] = []
+            appointments_list = appointments.filter(
+                week_day=s.day
+            ).order_by('time').values_list('time', flat=True)
+            st = s.time_start.hour
+            end = s.time_end.hour
+            time_slots = list(range(st, end+1))
+
+            for appoint in appointments_list:
+                if appoint.hour in time_slots:
+                    time_slots.remove(appoint.hour)
+
+            schedule_dict[s.day].append(time_slots)
+
+        return Response(schedule_dict)
