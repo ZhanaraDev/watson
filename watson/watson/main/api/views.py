@@ -4,8 +4,9 @@ from rest_framework.decorators import action, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from main.api.serializers import InsurancePackageSerializer, CategorySerializer, ClientCompanyEmployeesSerializer
-from main.models import InsurancePackage, Category, InsurancePackageCategories, ClientCompanyEmployees
+from main.api.serializers import InsurancePackageSerializer, CategorySerializer, ClientCompanyEmployeesSerializer, \
+    ServiceProviderSerializer
+from main.models import InsurancePackage, Category, InsurancePackageCategories, ClientCompanyEmployees, ServiceProvider
 
 
 class InsurancePackageViewset(viewsets.ModelViewSet):
@@ -61,3 +62,25 @@ class ProfileViewset(viewsets.ViewSet):
         instance = ClientCompanyEmployees.objects.get(user=user)
         serializer = self.serializer_class(instance)
         return Response(serializer.data)
+
+
+class ServiceProviderViewset(viewsets.ViewSet):
+    queryset = ClientCompanyEmployees.objects.all()
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
+    serializer_class = ServiceProviderSerializer
+
+    @action(detail=False)
+    def available(self, request):
+        package = self.queryset.filter(
+            user=request.user).first().insurance_package
+
+        categories = Category.objects.filter(
+            id__in=InsurancePackageCategories.objects.filter(
+                package=package
+            ).distinct('category').values('category__id'))
+
+        sps = ServiceProvider.objects.filter(categories__in=categories)
+        return Response(self.serializer_class(sps, many=True).data)
+
+

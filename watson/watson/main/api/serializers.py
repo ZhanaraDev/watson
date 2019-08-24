@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from main.models import Category, InsurancePackage, InsurancePackageCategories, ClientCompanyEmployees
+from main.models import Category, InsurancePackage, InsurancePackageCategories, ClientCompanyEmployees, ServiceProvider
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -28,3 +28,10 @@ class ClientCompanyEmployeesSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClientCompanyEmployees
         fields = '__all__'
+
+
+class ServiceProviderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ServiceProvider
+        fields = ('name', 'surname', 'avatar', 'position', 'visit_cost')
