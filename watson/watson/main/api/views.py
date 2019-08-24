@@ -25,6 +25,8 @@ class InsurancePackageViewset(viewsets.ModelViewSet):
         client_employee.package = package
         client_employee.save()
 
+        return Response(self.serializer_class(instance=package).data)
+
 
     @action(detail=False)
     def base(self, request):
