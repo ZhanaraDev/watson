@@ -64,7 +64,7 @@ class ProfileViewset(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-class ServiceProviderViewset(viewsets.ViewSet):
+class ServiceProviderViewset(viewsets.ModelViewSet):
     queryset = ClientCompanyEmployees.objects.all()
     authentication_classes = (TokenAuthentication, )
     permission_classes = [IsAuthenticated]
