@@ -68,7 +68,7 @@ class ProfileViewset(viewsets.ViewSet):
 
 
 class ServiceProviderViewset(viewsets.ModelViewSet):
-    queryset = ClientCompanyEmployees.objects.all()
+    queryset = ServiceProvider.objects.all()
     authentication_classes = (TokenAuthentication, )
     permission_classes = [IsAuthenticated]
     serializer_class = ServiceProviderSerializer
@@ -89,7 +89,8 @@ class ServiceProviderViewset(viewsets.ModelViewSet):
 
 class AppointmentViewSet(viewsets.ViewSet):
     queryset = Appointment.objects.none()
-    # serializer_class = None
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = [IsAuthenticated]
 
     @staticmethod
     def get_start_end_days_of_week(today):
@@ -124,3 +125,4 @@ class AppointmentViewSet(viewsets.ViewSet):
             schedule_dict[s.day].append(time_slots)
 
         return Response(schedule_dict)
+
