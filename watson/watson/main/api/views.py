@@ -33,6 +33,7 @@ class CategoryViewset(viewsets.ModelViewSet):
 
 class ProfileViewset(viewsets.ViewSet):
     authentication_classes = (TokenAuthentication,)
+    queryset = ClientCompanyEmployees.objects.all()
     serializer_class = ClientCompanyEmployeesSerializer
 
     @action(detail=False)
