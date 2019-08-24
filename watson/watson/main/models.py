@@ -78,7 +78,7 @@ class ServiceProviderSchedule(models.Model):
 
 
 class Appointment(models.Model):
-    employee = models.ForeignKey(ClientCompany, on_delete=models.CASCADE)
+    employee = models.ForeignKey(ClientCompanyEmployees, on_delete=models.CASCADE, null=True)
     service_provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()

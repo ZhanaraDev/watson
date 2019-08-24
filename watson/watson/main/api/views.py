@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from datetime import timedelta, datetime
+from datetime import time as dt_time
 
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -128,14 +129,33 @@ class AppointmentViewSet(viewsets.ViewSet):
         sorted_schedule = OrderedDict(sorted(schedule_dict.items(), key=lambda t: t[0]))
         return Response(sorted_schedule)
 
-    # @action(detail=True)
-    # def appoint(self, request, pk):
-    #     date = request.data.get('date')
-    #     time = request.data.get('time')
-    #     week_day = request.data.get('week_day')
-    #
-    #     Appointment.objects.create(
-    #         employee=ClientCompanyEmployees.objects.filter(user=request.user).first(),
-    #         service_provider=ServiceProvider.objects.get(id=pk),
-    #
-    #     )
+    @action(detail=True, methods=["post"])
+    def appoint(self, request, pk):
+        week_dict = {v: k for k, v in WEEK_DICT.items()}
+
+        date = datetime.strptime(request.data.get('date'), "%Y/%m/%d") #2019/08/05 y m d
+        time = dt_time(hour=int(request.data.get('time'))) #int
+        week_day = week_dict[int(request.data.get('week_day'))] #int 1-7
+
+        employee = ClientCompanyEmployees.objects.get(user=request.user)
+        service_provider = ServiceProvider.objects.get(id=pk)
+
+        if employee.balance - service_provider.visit_cost >= 0:
+            employee.balance -= service_provider.visit_cost
+            employee.save()
+            if not Appointment.objects.filter(
+                    week_day=week_day, date=date, time=time).exists():
+
+                Appointment.objects.create(
+                    employee=employee,
+                    service_provider=service_provider,
+                    week_day=week_day,
+                    date=date,
+                    time=time
+                )
+            else:
+                return Response('Это время занято', status=400)
+
+        else:
+            return Response('Недостаточно баланса', status=400)
+        return Response(status=200)
