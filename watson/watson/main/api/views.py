@@ -1,9 +1,10 @@
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from main.api.serializers import InsurancePackageSerializer, CategorySerializer
-from main.models import InsurancePackage, Category, InsurancePackageCategories
+from main.api.serializers import InsurancePackageSerializer, CategorySerializer, ClientCompanyEmployeesSerializer
+from main.models import InsurancePackage, Category, InsurancePackageCategories, ClientCompanyEmployees
 
 
 class InsurancePackageViewset(viewsets.ModelViewSet):
@@ -30,3 +31,13 @@ class CategoryViewset(viewsets.ModelViewSet):
     queryset = Category.objects.all()
 
 
+class ProfileViewset(viewsets.ViewSet):
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = ClientCompanyEmployeesSerializer
+
+    @action(detail=False)
+    def show(self, request):
+        user = request.user
+        instance = ClientCompanyEmployees.objects.get(user=user)
+        serializer = self.serializer_class(instance)
+        return Response(serializer.data)
