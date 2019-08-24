@@ -10,15 +10,21 @@ from main.models import InsurancePackage, Category, InsurancePackageCategories, 
 class InsurancePackageViewset(viewsets.ModelViewSet):
     queryset = InsurancePackage.objects.all()
     serializer_class = InsurancePackageSerializer
+    authentication_classes = (TokenAuthentication,)
 
     @action(detail=True, methods=['post'])
-    def create_package(self, requests):
-        body = requests.data
+    def create_package(self, request):
+        user = request.user
+        body = request.data
         package_name = body.get('package_name')
         category_list = body.get('category_list')
         package = InsurancePackage.objects.create(package_name=package_name)
         for category in Category.objects.filter(pk__in=category_list).distinct():
             InsurancePackageCategories.objects.create(category=category, package=package)
+        client_employee = ClientCompanyEmployees.objects.get(user=user)
+        client_employee.package = package
+        client_employee.save()
+
 
     @action(detail=False)
     def base(self, request):
