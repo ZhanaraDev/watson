@@ -39,8 +39,12 @@ class ServiceProvidingHolding(models.Model):
 
 class ServiceProvider(models.Model):
     name = models.CharField(max_length=250)
+    surname = models.CharField(max_length=250, default="")
+    position = models.CharField(max_length=250, default="therapist")
     service_providing_holding = models.ForeignKey(ServiceProvidingHolding, on_delete=models.CASCADE)
     visit_cost = models.DecimalField(max_digits=8, decimal_places=2)
+    avatar = models.CharField(max_length=250, default="")
+    categories = models.ManyToManyField(Category, null=True)
 
 
 DAY_CHOICES = (

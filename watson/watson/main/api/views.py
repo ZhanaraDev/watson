@@ -38,7 +38,6 @@ class InsurancePackageViewset(viewsets.ModelViewSet):
 
         return Response(self.serializer_class(instance=package).data)
 
-
     @action(detail=False)
     def base(self, request):
         base_packages = self.queryset.filter(is_base=True)
