@@ -20,7 +20,6 @@ class InsurancePackage(models.Model):
 class InsurancePackageCategories(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     package = models.ForeignKey(InsurancePackage, on_delete=models.CASCADE)
-    money_limit = models.DecimalField(max_digits=8, decimal_places=2)
 
 
 class ClientCompanyEmployees(models.Model):
