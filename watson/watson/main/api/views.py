@@ -122,7 +122,7 @@ class AppointmentViewSet(viewsets.ViewSet):
                 if appoint.hour in time_slots:
                     time_slots.remove(appoint.hour)
 
-            schedule_dict[s.day].append(time_slots)
+            schedule_dict[s.day] = time_slots
 
         return Response(schedule_dict)
 
