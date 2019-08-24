@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from main.api.serializers import InsurancePackageSerializer, CategorySerializer, ClientCompanyEmployeesSerializer
@@ -53,6 +54,7 @@ class ProfileViewset(viewsets.ViewSet):
     authentication_classes = (TokenAuthentication,)
     queryset = ClientCompanyEmployees.objects.all()
     serializer_class = ClientCompanyEmployeesSerializer
+    permission_classes = [IsAuthenticated]
 
     @action(detail=False)
     def show(self, request):
