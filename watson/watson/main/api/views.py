@@ -12,12 +12,14 @@ class InsurancePackageViewset(viewsets.ModelViewSet):
     serializer_class = InsurancePackageSerializer
     authentication_classes = (TokenAuthentication,)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post', ])
     def create_package(self, request):
         user = request.user
+        print(request.data)
         body = request.data
         package_name = body.get('package_name')
-        category_list = body.get('category_list')
+        category_list = body.get('category_list').split(',')
+        print("cats", category_list)
         package = InsurancePackage.objects.create(package_name=package_name)
         for category in Category.objects.filter(pk__in=category_list).distinct():
             InsurancePackageCategories.objects.create(category=category, package=package)
