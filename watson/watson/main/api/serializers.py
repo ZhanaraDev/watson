@@ -14,7 +14,7 @@ class InsurancePackageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InsurancePackage
-        fields = ('package_name', 'categories', )
+        fields = ('id', 'package_name', 'categories', )
 
     def get_categories(self, obj):
         cats = Category.objects.filter(id__in=InsurancePackageCategories.objects.filter(
