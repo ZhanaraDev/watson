@@ -24,6 +24,10 @@ class InsurancePackageSerializer(serializers.ModelSerializer):
 
 
 class ClientCompanyEmployeesSerializer(serializers.ModelSerializer):
+    balance = serializers.SerializerMethodField()
+
+    def get_balance(self, obj):
+        return int(obj.balance)
 
     class Meta:
         model = ClientCompanyEmployees
