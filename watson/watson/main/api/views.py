@@ -10,7 +10,7 @@ class InsurancePackageViewset(viewsets.ModelViewSet):
     queryset = InsurancePackage.objects.all()
     serializer_class = InsurancePackageSerializer
 
-    @action(detail=True, methods='post')
+    @action(detail=True, methods=['post'])
     def create_package(self, requests):
         body = requests.data
         package_name = body.get('package_name')
@@ -19,7 +19,7 @@ class InsurancePackageViewset(viewsets.ModelViewSet):
         for category in Category.objects.filter(pk__in=category_list).distinct():
             InsurancePackageCategories.objects.create(category=category, package=package)
 
-    @action(detail=False, methods=["get"])
+    @action(detail=False)
     def base(self, request):
         base_packages = self.queryset.filter(is_base=True)
         return Response(self.serializer_class(base_packages, many=True).data)
@@ -28,3 +28,5 @@ class InsurancePackageViewset(viewsets.ModelViewSet):
 class CategoryViewset(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
+
+
