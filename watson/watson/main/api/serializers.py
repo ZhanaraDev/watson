@@ -31,7 +31,24 @@ class ClientCompanyEmployeesSerializer(serializers.ModelSerializer):
 
 
 class ServiceProviderSerializer(serializers.ModelSerializer):
+    position = serializers.SerializerMethodField()
+    visit_cost = serializers.SerializerMethodField()
+
+    def get_position(self, obj):
+        positions = {
+            'dentist': u'Дантист',
+            'therapist': u'Терапевт',
+            'psychologist': u'Психолог',
+            'surgeon': u'Хирург',
+            'gynecologist': u'Гинеколог',
+            'nurse': u'Мед. сестра',
+            'neurologist': u'Невропатолог'
+        }
+        return positions.get(obj.position, obj.position)
+
+    def get_visit_cost(self, obj):
+        return int(obj.visit_cost)
 
     class Meta:
         model = ServiceProvider
-        fields = ('id','name', 'surname', 'avatar', 'position', 'visit_cost')
+        fields = ('id', 'name', 'surname', 'avatar', 'position', 'visit_cost')
