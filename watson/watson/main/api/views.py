@@ -75,7 +75,7 @@ class ServiceProviderViewset(viewsets.ModelViewSet):
 
     @action(detail=False)
     def available(self, request):
-        package = self.queryset.filter(
+        package = ClientCompanyEmployees.objects.filter(
             user=request.user).first().insurance_package
 
         categories = Category.objects.filter(
@@ -126,3 +126,14 @@ class AppointmentViewSet(viewsets.ViewSet):
 
         return Response(schedule_dict)
 
+    @action(detail=True)
+    def appoint(self, request, pk):
+        date = request.data.get('date')
+        time = request.data.get('time')
+        week_day = request.data.get('week_day')
+
+        Appointment.objects.create(
+            employee=ClientCompanyEmployees.objects.filter(user=request.user).first(),
+            service_provider=ServiceProvider.objects.get(id=pk),
+
+        )
