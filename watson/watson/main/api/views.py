@@ -13,9 +13,20 @@ class InsurancePackageViewset(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
 
     @action(detail=False, methods=['post', ])
-    def create_package(self, request):
+    def assign_package(self, request):
         user = request.user
-        print(request.data)
+        package_id = request.data.get('package')
+
+        package = InsurancePackage.objects.get(id=package_id)
+
+        ClientCompanyEmployees.objects.filter(
+            user=user
+        ).update(insurance_package=package)
+
+        return Response(self.serializer_class(instance=package).data)
+
+    @action(detail=False, methods=['post', ])
+    def create_package(self, request):
         body = request.data
         package_name = body.get('package_name')
         category_list = body.get('category_list').split(',')
@@ -23,9 +34,6 @@ class InsurancePackageViewset(viewsets.ModelViewSet):
         package = InsurancePackage.objects.create(package_name=package_name)
         for category in Category.objects.filter(pk__in=category_list).distinct():
             InsurancePackageCategories.objects.create(category=category, package=package)
-        client_employee = ClientCompanyEmployees.objects.get(user=user)
-        client_employee.package = package
-        client_employee.save()
 
         return Response(self.serializer_class(instance=package).data)
 
