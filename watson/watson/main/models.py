@@ -30,7 +30,7 @@ class ClientCompanyEmployees(models.Model):
     iin = models.CharField(max_length=250)
     balance = models.DecimalField(max_digits=8, decimal_places=2)
     insurance_package = models.OneToOneField(InsurancePackage, null=True, on_delete=models.CASCADE)
-    # avatar = models.CharField()
+    avatar = models.CharField(max_length=500, default='')
 
 
 class ServiceProvidingHolding(models.Model):
