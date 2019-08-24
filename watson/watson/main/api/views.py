@@ -37,7 +37,6 @@ class InsurancePackageViewset(viewsets.ModelViewSet):
         body = request.data
         package_name = body.get('package_name')
         category_list = body.get('category_list').split(',')
-        print("cats", category_list)
         package = InsurancePackage.objects.create(package_name=package_name)
         for category in Category.objects.filter(pk__in=category_list).distinct():
             InsurancePackageCategories.objects.create(category=category, package=package)
@@ -110,7 +109,7 @@ class AppointmentViewSet(viewsets.ViewSet):
             date__gte=start_day,
             date__lte=end_day,
         )
-        print(appointments)
+
         schedule_dict = {}
         for s in schedule:
             k = WEEK_DICT[s.day]
