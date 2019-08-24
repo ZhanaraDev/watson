@@ -24,7 +24,7 @@ class Command(BaseCommand):
 
         for user in self.user_list:
             if not User.objects.filter(username=user['username']).exists():
-                user_ = User.objects.create(username=user['username'], password='1234')
+                user_ = User.objects.create_user(username=user['username'], password='1234')
 
                 ClientCompanyEmployees.objects.create(
                     user=user_, name=user['name'],
